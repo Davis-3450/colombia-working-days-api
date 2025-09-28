@@ -17,6 +17,12 @@ class Error(Enum):
     """
     INVALID_PARAMETERS = "InvalidParameters"
 
+class ErrorMessage(Enum):
+    """
+    Error messages
+    """
+    INVALID_PARAMETERS = "Invalid parameters"
+
 class InvalidResponse(BaseModel):
     error: Error = Error.INVALID_PARAMETERS
     message: str = "Error"  # default
