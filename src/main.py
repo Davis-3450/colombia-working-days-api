@@ -27,4 +27,10 @@ def name(days: int = None, hours: int = None, date: datetime = None):
     return "InvalidResponse()"
 
 
-# end def
+# get holidays | not a requirement
+@app.get("/holidays")
+def get_holidays():
+    return holyday_list
+
+
+
