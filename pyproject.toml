@@ -1,7 +1,20 @@
 [project]
 name = "colombia-working-days-api"
 version = "0.1.0"
-description = "Add your description here"
+description = "This is an API for getting Colombian days "
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "datetime>=5.5",
+    "fastapi[standard]>=0.117.1",
+    "httpx>=0.28.1",
+    "pydantic>=2.11.9",
+    "tzdata>=2025.2",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.4.2"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
