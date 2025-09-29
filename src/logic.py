@@ -1,7 +1,6 @@
-from datetime import timedelta
+from datetime import timedelta, time
 from datetime import datetime
-
-from src.models.data import Weekday
+from src.constants import Weekday, WorkHour
 from .constants import *
 
 #z suffix is optional, fallback to Colombian timezone
@@ -19,8 +18,19 @@ class DateValidator:
         self.date = date
 
     def is_valid(self) -> bool:
-        # return self.is_working_day() and self.is_working_hour()
-        pass
+        return self.is_working_day() and self.is_working_hour()
+
+    def is_working_day(self) -> bool:
+        if self.date.weekday() == Weekday.SATURDAY.value or self.date.weekday() == Weekday.SUNDAY.value:
+            return False
+        if self.is_holiday():
+            return False
+        return True
+
+    def is_working_hour(self) -> bool:
+        if self.date.hour in range(WorkHour.WORK_START.value, WorkHour.WORK_END.value) and self.date.hour not in range(WorkHour.LUNCH_START.value, WorkHour.LUNCH_END.value):
+            return True
+        return False
 
     def is_holiday(self) -> bool:
         return self.date.date() in holyday_list
@@ -42,3 +52,40 @@ class Calculator:
 
     def _now(self) -> datetime:
         return datetime.now(TZ)
+
+    #TODO
+    def calculate(self) -> datetime:
+
+        # cases:
+        # date is None -> not provided | order: days, hours
+        
+        
+        return self.date
+        
+        final_date: datetime | None = None
+        days = self.days
+        # matches: List[datetime] = []
+
+        for day in range(days):
+            if final_date is not None:
+                break
+
+            current_date = self.date + timedelta(days=day)
+
+            if not DateValidator(current_date).is_valid():
+                continue
+            
+            current_date = current_date + timedelta(hours=self.hours)
+            
+            if not DateValidator(current_date).is_valid():
+                continue
+            
+            #sum hours
+            hours = self.hours
+            for hour in range(self.hours):
+                current_date = current_date + timedelta(hours=1)
+                if not DateValidator(current_date).is_valid():
+                    continue
+                
+            final_date = current_date
+        return self.date #placeholder
