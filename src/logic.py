@@ -17,15 +17,11 @@ class DateValidator:
     def __init__(self, date: datetime):
         self.date = date
 
-    def is_valid(self) -> bool:
-        return self.is_working_day() and self.is_working_hour()
-
     def is_working_day(self) -> bool:
-        if self.date.weekday() == Weekday.SATURDAY.value or self.date.weekday() == Weekday.SUNDAY.value:
+        weekday = self.date.weekday()
+        if weekday in (Weekday.SATURDAY.value, Weekday.SUNDAY.value):
             return False
-        if self.is_holiday():
-            return False
-        return True
+        return self.date.date() not in holyday_list
 
     def is_working_hour(self) -> bool:
         t = self.date.time()
