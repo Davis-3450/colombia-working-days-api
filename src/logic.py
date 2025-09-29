@@ -1,42 +1,28 @@
-from datetime import date, datetime, time, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 from src.constants import Weekday, WorkHour
 
 from .constants import TZ, holyday_list
 
-#z suffix is optional, fallback to Colombian timezone
-#order -> days, hours, date
+# z suffix is optional, fallback to Colombian timezone
+# order -> days, hours, date
+# minutes, seconds, microseconds are EXCLUDED
+# rounding is to the past
 
-#TODO
+# TODO
 # [x] fallback to Colombia timezone
+# [ ] working day: bot weekday and (not) in holidays
+# [ ] if the end date doesn't hit a day, "round" it to either to the previous or to the next working hour (and day) -> aka working date
+
+HOLIDAYS = frozenset(holyday_list)
+
 
 def set_tz(date: datetime, tz: ZoneInfo) -> datetime:
     if date.tzinfo is None:
         return date.replace(tzinfo=tz)
     return date.astimezone(tz)
 
-
-    """
-    Date validator class
-    """
-    def __init__(self, date: datetime):
-        self.date = date
-
-    def is_working_day(self) -> bool:
-        weekday = self.date.weekday()
-        if weekday in (Weekday.SATURDAY.value, Weekday.SUNDAY.value):
-            return False
-        return self.date.date() not in holyday_list
-
-    def is_working_hour(self) -> bool:
-        t = self.date.time()
-        morning_ok = time(WorkHour.WORK_START.value) <= t < time(WorkHour.LUNCH_START.value)
-        afternoon_ok = time(WorkHour.LUNCH_END.value) <= t < time(WorkHour.WORK_END.value)
-        return morning_ok or afternoon_ok
-
-    def is_holiday(self) -> bool:
-        return self.date.date() in holyday_list
 
 class Calculator:
     def __init__(
@@ -55,44 +41,63 @@ class Calculator:
     def _set_date(self, date: datetime | None) -> datetime | None:
         if date is None:
             return self._now()
-        return date
+        return self._date_tz(date)
 
     def _now(self) -> datetime:
-        return datetime.now(TZ)
+        return datetime.now(self.tz)
 
-    #TODO
-    def calculate(self) -> datetime:
+    def _date_tz(self, date: datetime):
+        return set_tz(date, self.tz)
 
-        # cases:
-        # date is None -> not provided | order: days, hours
-        
-        
-        return self.date
-        
-        final_date: datetime | None = None
-        days = self.days
-        # matches: List[datetime] = []
+    # TODO: refactor, this is a mess
+    def _round_to_working_datetime(self, start: datetime):
+        """Round to working datetime. (down)"""
+        local = self._date_tz(start)
 
-        for day in range(days):
-            if final_date is not None:
-                break
+        date, hour = local.date(), local.hour
 
-            current_date = self.date + timedelta(days=day)
+        if date.weekday() >= Weekday.FRIDAY.value or date in self.HOLIDAYS:
+            date = date - timedelta(days=1)
+            while date.weekday() >= Weekday.FRIDAY.value or date in self.HOLIDAYS:
+                date -= timedelta(days=1)
+            return datetime(
+                date.year,
+                date.month,
+                date.day,
+                WorkHour.WORK_END.value,
+                0,
+                tzinfo=self.tz,
+            )
 
-            if not DateValidator(current_date).is_valid():
-                continue
-            
-            current_date = current_date + timedelta(hours=self.hours)
-            
-            if not DateValidator(current_date).is_valid():
-                continue
-            
-            #sum hours
-            hours = self.hours
-            for hour in range(self.hours):
-                current_date = current_date + timedelta(hours=1)
-                if not DateValidator(current_date).is_valid():
-                    continue
-                
-            final_date = current_date
-        return self.date #placeholder
+        if hour < WorkHour.WORK_START.value:
+            date = date - timedelta(days=1)
+            while date.weekday() >= Weekday.FRIDAY.value or date in self.HOLIDAYS:
+                date -= timedelta(days=1)
+            return datetime(
+                date.year,
+                date.month,
+                date.day,
+                WorkHour.WORK_END.value,
+                0,
+                tzinfo=self.tz,
+            )
+
+        if hour < WorkHour.WORK_START.value:
+            return local.replace(hour=WorkHour.WORK_START.value)
+
+        if hour == WorkHour.LUNCH_START.value:
+            return local.replace(hour=WorkHour.LUNCH_START.value)
+
+        if hour >= WorkHour.WORK_START.value:
+            return local.replace(hour=WorkHour.WORK_START.value)
+
+        return local
+
+    def calculate(self) -> str:
+        base = self._round_to_working_datetime(self.date)
+        result = base
+        return (
+            result.astimezone(timezone.utc)
+            .replace(microsecond=0)
+            .strftime("%Y-%m-%dT%H:%M:%SZ")
+        )
