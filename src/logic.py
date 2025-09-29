@@ -21,6 +21,10 @@ class DateValidator:
     def is_valid(self) -> bool:
         # return self.is_working_day() and self.is_working_hour()
         pass
+
+    def is_holiday(self) -> bool:
+        return self.date.date() in holyday_list
+
 class Calculator:
     def __init__(
         self, days: int | None = None, hours: int | None = None, date: datetime | None = None
