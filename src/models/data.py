@@ -24,4 +24,4 @@ class ErrorMessage(Enum):
     INVALID_PARAMETERS = "Invalid parameters"
 
 
-holiday_list_adapter = TypeAdapter(List[date])
+holyday_list_adapter = TypeAdapter(List[date])
