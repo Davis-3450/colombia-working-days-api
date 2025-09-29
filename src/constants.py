@@ -8,11 +8,6 @@ from models.data import holyday_list_adapter
 
 HOLIDAYS_URL = "https://content.capta.co/Recruitment/WorkingDays.json"
 TZ = ZoneInfo("America/Bogota")
-WORK_HOUR_START = 8
-WORK_HOUR_END = 17
-LUNCH_HOUR_START = 12
-LUNCH_HOUR_END = 13
-
 class Weekday(int, Enum):
     MONDAY = 0
     TUESDAY = 1
@@ -22,6 +17,11 @@ class Weekday(int, Enum):
     SATURDAY = 5
     SUNDAY = 6
 
+class WorkHour(int, Enum):
+    WORK_START = 8
+    LUNCH_START = 12
+    LUNCH_END = 13
+    WORK_END = 17
 
 # Note: this is an oversimplification, only happens on cold boot, I doubt we need amything else...
 # TODO: fix, this might run on each import.
