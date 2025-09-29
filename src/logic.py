@@ -14,5 +14,10 @@ class Calculator:
         # date
         self.date: datetime | None = self._set_date(date)
 
+    def _set_date(self, date: datetime | None) -> datetime | None:
+        if date is None:
+            return self._now()
+        return date
+
     def _now(self) -> datetime:
         return datetime.now(TZ)
