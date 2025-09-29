@@ -77,3 +77,20 @@ def test_9():
     )
     assert response.status_code == 200
     assert response.json() == {"date": "2025-04-21T20:00:00.000Z"}
+
+
+# errors
+
+def test_error_1():
+    """
+    No parameters
+    """
+    response = test_client.get("/calculate")
+    assert response.status_code == 400
+    # assert response.json() == {"error": "InvalidParameters", "message": "Invalid parameters"}
+
+def test_error_2():
+    """
+    Invalid parameters (invalid date)
+    """
+    response = test_client.get("/calculate?days=1&hours=1&date=2025-08-01T15:00:00.000Z")
