@@ -4,6 +4,13 @@ from datetime import datetime
 from src.models.data import Weekday
 from .constants import *
 
+#z suffix is optional, fallback to Colombian timezone
+#order -> days, hours, date
+
+#TODO
+# [x] fallback to Colombia timezone
+
+
 class Calculator:
     def __init__(
         self, days: int | None = None, hours: int | None = None, date: datetime | None = None
