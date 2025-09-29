@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import List
 from zoneinfo import ZoneInfo
 import httpx
@@ -11,6 +12,15 @@ WORK_HOUR_START = 8
 WORK_HOUR_END = 17
 LUNCH_HOUR_START = 12
 LUNCH_HOUR_END = 13
+
+class Weekday(int, Enum):
+    MONDAY = 0
+    TUESDAY = 1
+    WEDNESDAY = 2
+    THURSDAY = 3
+    FRIDAY = 4
+    SATURDAY = 5
+    SUNDAY = 6
 
 
 # Note: this is an oversimplification, only happens on cold boot, I doubt we need amything else...
