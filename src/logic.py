@@ -1,7 +1,9 @@
-from datetime import timedelta, time
-from datetime import datetime
+from datetime import date, datetime, time, timedelta, timezone
+from zoneinfo import ZoneInfo
+
 from src.constants import Weekday, WorkHour
-from .constants import *
+
+from .constants import TZ, holyday_list
 
 #z suffix is optional, fallback to Colombian timezone
 #order -> days, hours, date
@@ -9,8 +11,12 @@ from .constants import *
 #TODO
 # [x] fallback to Colombia timezone
 
+def set_tz(date: datetime, tz: ZoneInfo) -> datetime:
+    if date.tzinfo is None:
+        return date.replace(tzinfo=tz)
+    return date.astimezone(tz)
 
-class DateValidator:
+
     """
     Date validator class
     """
@@ -34,13 +40,17 @@ class DateValidator:
 
 class Calculator:
     def __init__(
-        self, days: int | None = None, hours: int | None = None, date: datetime | None = None
+        self,
+        days: int | None = None,
+        hours: int | None = None,
+        date: datetime | None = None,
     ):
         self.days: int = 0 if days is None else days
         self.hours: int = 0 if hours is None else hours
 
         # date
         self.date: datetime | None = self._set_date(date)
+        self.tz = TZ
 
     def _set_date(self, date: datetime | None) -> datetime | None:
         if date is None:
