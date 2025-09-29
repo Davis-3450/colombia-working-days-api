@@ -3,12 +3,9 @@ import os
 
 import httpx
 from dotenv import load_dotenv
-from fastapi import FastAPI
-
-load_dotenv()
-HOLIDAYS = os.getenv("HOLYDAYS")
-
-# get days on cold boot (why anything else lol?)
+from fastapi import FastAPI, HTTPException
+from models.responses import InvalidResponse, Response
+from constants import holyday_list
 
 # error: { "error": "InvalidParameters", "message": "Detalle del error" }
 
