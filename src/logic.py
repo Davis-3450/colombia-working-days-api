@@ -28,9 +28,10 @@ class DateValidator:
         return True
 
     def is_working_hour(self) -> bool:
-        if self.date.hour in range(WorkHour.WORK_START.value, WorkHour.WORK_END.value) and self.date.hour not in range(WorkHour.LUNCH_START.value, WorkHour.LUNCH_END.value):
-            return True
-        return False
+        t = self.date.time()
+        morning_ok = time(WorkHour.WORK_START.value) <= t < time(WorkHour.LUNCH_START.value)
+        afternoon_ok = time(WorkHour.LUNCH_END.value) <= t < time(WorkHour.WORK_END.value)
+        return morning_ok or afternoon_ok
 
     def is_holiday(self) -> bool:
         return self.date.date() in holyday_list
