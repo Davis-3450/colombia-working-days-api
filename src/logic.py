@@ -11,6 +11,16 @@ from .constants import *
 # [x] fallback to Colombia timezone
 
 
+class DateValidator:
+    """
+    Date validator class
+    """
+    def __init__(self, date: datetime):
+        self.date = date
+
+    def is_valid(self) -> bool:
+        # return self.is_working_day() and self.is_working_hour()
+        pass
 class Calculator:
     def __init__(
         self, days: int | None = None, hours: int | None = None, date: datetime | None = None
