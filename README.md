@@ -5,7 +5,7 @@ This is an API for calculating the working days in Colombia.
 ## run in dev mode
 
 ```bash
-uv run --dev fastapi dev .\src\main.py
+uv run --dev fastapi dev
 ```
 
 ## run tests
