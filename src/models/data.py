@@ -1,27 +1,26 @@
-from datetime import datetime, timedelta, date
+from __future__ import annotations
 
-from pydantic import BaseModel, Field, RootModel, TypeAdapter
-from typing import List
+from datetime import date, datetime
 from enum import Enum
+from typing import List
 
-# datetime
-# class request(BaseModel):
-#     days: int | None = None
-#     hours: timedelta | None = None
-#     datetime: datetime | None = None
+from pydantic import BaseModel, PositiveInt, TypeAdapter
 
+class Request(BaseModel):
+    days: PositiveInt | None = None
+    hours: PositiveInt | None = None
+    date: datetime | None = None
 
 
 class Error(Enum):
-    """
-    Error types
-    """
+    """Error types"""
+
     INVALID_PARAMETERS = "InvalidParameters"
 
+
 class ErrorMessage(Enum):
-    """
-    Error messages
-    """
+    """Error messages"""
+
     INVALID_PARAMETERS = "Invalid parameters"
 
 
